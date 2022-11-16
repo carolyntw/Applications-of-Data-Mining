@@ -6,12 +6,8 @@ import sys
 file_name = 'users.txt'
 stream_size = 100
 num_to_ask = 30  
-output_file = 'task3-1.csv'
+output_file = 'task3.csv'
 
-# file_name = sys.argv[1]
-# stream_size = int(sys.argv[2])
-# num_to_ask = int(sys.argv[3]) 
-# output_file = sys.argv[4]
 
 bx = BlackBox()
 random.seed(553)
