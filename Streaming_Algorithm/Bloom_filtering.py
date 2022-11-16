@@ -38,15 +38,10 @@ startTime = time.time()
 conf = SparkConf().setMaster("local[*]").set("spark.executor.memory", "4g").set("spark.driver.memory", "4g")
 sc = SparkContext(conf=conf)
 
-file_name = sys.argv[1]
-stream_size = int(sys.argv[2])
-num_to_ask = int(sys.argv[3]) 
-output_file = sys.argv[4]
-
-# file_name = 'users.txt'
-# stream_size = 100
-# num_to_ask = 30 
-# output_file = 'task1.csv'
+file_name = 'users.txt'
+stream_size = 100
+num_to_ask = 30 
+output_file = 'task1.csv'
 
 bx = BlackBox()
 
