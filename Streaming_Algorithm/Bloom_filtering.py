@@ -33,60 +33,61 @@ def bloomFilter(param_a_list, param_b_list):
     return bloom_filter
 
 
-startTime = time.time()
+if __name__ == '__main__':
+    startTime = time.time()
 
-conf = SparkConf().setMaster("local[*]").set("spark.executor.memory", "4g").set("spark.driver.memory", "4g")
-sc = SparkContext(conf=conf)
+    conf = SparkConf().setMaster("local[*]").set("spark.executor.memory", "4g").set("spark.driver.memory", "4g")
+    sc = SparkContext(conf=conf)
 
-file_name = 'users.txt'
-stream_size = 100
-num_to_ask = 30 
-output_file = 'task1.csv'
+    file_name = 'users.txt'
+    stream_size = 100
+    num_to_ask = 30 
+    output_file = 'task1.csv'
 
-bx = BlackBox()
+    bx = BlackBox()
 
-global_hash_array = [-1] * 69997
-num_func = 3
-a_list, b_list = generateHashFunc(num_func)
+    global_hash_array = [-1] * 69997
+    num_func = 3
+    a_list, b_list = generateHashFunc(num_func)
 
 
-output = []
-shown = set()
+    output = []
+    shown = set()
 
-for i in range(num_to_ask):
-    stream_users = bx.ask(file_name,stream_size)
-    hash_showed = []
-    for u in stream_users:
-        hash_v = myhashs(u)
-        count = 0
-        for value in hash_v:
-            count += global_hash_array[value]
-        if count == len(hash_v):
-            hash_showed.append(u)
+    for i in range(num_to_ask):
+        stream_users = bx.ask(file_name,stream_size)
+        hash_showed = []
+        for u in stream_users:
+            hash_v = myhashs(u)
+            count = 0
+            for value in hash_v:
+                count += global_hash_array[value]
+            if count == len(hash_v):
+                hash_showed.append(u)
 
-    true_hashed_show = []
-    for k in stream_users:
-        if k in shown:
-            true_hashed_show.append(k)
-    if len(hash_showed) == 0:
-        output.extend((i,0.0))
-    else:
-        hash_not_showed =[]
-        for n in hash_showed:
-            if n not in true_hashed_show:
-                hash_not_showed.append(n) 
-        output.extend((i,len(hash_not_showed)/len(hash_showed)))
-    
-    for u in stream_users:
-        shown.add(u)
-        hash_v = myhashs(u)
-        for v in hash_v:
-            global_hash_array[v] = 1
+        true_hashed_show = []
+        for k in stream_users:
+            if k in shown:
+                true_hashed_show.append(k)
+        if len(hash_showed) == 0:
+            output.extend((i,0.0))
+        else:
+            hash_not_showed =[]
+            for n in hash_showed:
+                if n not in true_hashed_show:
+                    hash_not_showed.append(n) 
+            output.extend((i,len(hash_not_showed)/len(hash_showed)))
 
-# print(output)
+        for u in stream_users:
+            shown.add(u)
+            hash_v = myhashs(u)
+            for v in hash_v:
+                global_hash_array[v] = 1
 
-with open(output_file,'w+') as f:
-    f.write('Time,FPR\n')
-    for i in range(0,len(output),2):
-        f.write(str(output[i])+','+str(output[i+1]))
-        f.write('\n')
+    # print(output)
+
+    with open(output_file,'w+') as f:
+        f.write('Time,FPR\n')
+        for i in range(0,len(output),2):
+            f.write(str(output[i])+','+str(output[i+1]))
+            f.write('\n')
